@@ -21,8 +21,13 @@ _zipSafe         = False
 _keywords        = 'rdf cancer data reports'
 _testSuite       = 'edrn.exporeports.tests.test_suite'
 _extras          = {}
-_entryPoints     = {'console_scripts': ['exporeports=edrn.exporeports.main:main']}
 _requirements    = ['setuptools', 'rdflib']
+_entryPoints     = {
+    'console_scripts': [
+        'csv=edrn.exporeports.csvreports:main',
+        'special-protocols=edrn.exporeports.protocols:main'
+    ]
+}
 _classifiers = [
     'Development Status :: 2 - Pre-Alpha',
     'Environment :: Console',
