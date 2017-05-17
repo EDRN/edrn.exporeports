@@ -5,7 +5,7 @@ u'''EDRN Protocol Reports — Main'''
 from .utils import (
     UnicodeCSVWriter, getStatements, DC_TITLE_URI, CANCER_DATA_EXPO_BASE_URL, BIOMARKER_STUDY_RDF_URL, ECAS_RDF_URL
 )
-import sys, argparse, rdflib, csv, cStringIO, codecs, logging
+import sys, argparse, rdflib, logging
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG, format=u'%(asctime)s %(levelname)-8s %(message)s')
@@ -16,6 +16,9 @@ _ecasReferencesURI = rdflib.term.URIRef(u'http://edrn.nci.nih.gov/rdf/schema.rdf
 
 
 def main():
+    u'''Generate CSV report of special protocols, where 'special' means
+    protocols that have no biomarkers but do have science data.
+    '''
     parser = argparse.ArgumentParser(
         description=u"Generates CSV report of special protocols, where 'special' means protocols that have no"
         u" biomarkers but do have science data."

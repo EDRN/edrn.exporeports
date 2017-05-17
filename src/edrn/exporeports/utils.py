@@ -2,7 +2,7 @@
 
 u'''EDRN Expo Reports — Main'''
 
-import sys, argparse, rdflib, csv, cStringIO, codecs, logging
+import rdflib, csv, cStringIO, codecs, logging
 
 # Where's the Cancer Data Expo?
 CANCER_DATA_EXPO_BASE_URL = u'https://edrn.jpl.nasa.gov/cancerdataexpo/rdf-data'
@@ -72,30 +72,3 @@ def getStatements(url):
     g = rdflib.Graph()
     g.load(url)
     return _parseRDF(g)
-
-
-def _dumpTable(statements, fn):
-    u'''Dump statements into a flat tabular CSV file named fn.'''
-    # First, figure out what our column headings will be
-    columns = set()
-    for predicates in statements.itervalues():
-        columns.update(frozenset(predicates.keys()))
-    columns.remove(rdflib.RDF.type)
-    columns = list(columns)
-    columns.sort()
-    # Now we can dump each row
-    keys = statements.keys()
-    keys.sort()
-    with open(fn, 'wb') as output:
-        writer = _UnicodeCSVWriter(output)
-        writer.writerow([u'Subject'] + columns)
-        for subjectURI in keys:
-            predicates = statements[subjectURI]
-            objects = []
-            for column in columns:
-                values = predicates.get(column, [])
-                values = u', '.join([unicode(i) for i in values])
-                objects.append(values)
-            writer.writerow([subjectURI] + objects)
-
-
