@@ -1,59 +1,35 @@
 # encoding: utf-8
 
-u'''EDRN Expo Reports — Main'''
+'''EDRN Expo Reports — Main'''
 
-import rdflib, csv, cStringIO, codecs, logging
+import rdflib, logging
 
 # Where's the Cancer Data Expo?
-CANCER_DATA_EXPO_BASE_URL = u'https://edrn.jpl.nasa.gov/cancerdataexpo/rdf-data'
+CANCER_DATA_EXPO_BASE_URL = 'https://edrn.jpl.nasa.gov/cancerdataexpo/rdf-data'
 
 # And where do we get biomarker data?
-BIOMARKER_RDF_URL = u'https://edrn.jpl.nasa.gov/bmdb/rdf/biomarkers'
-BIOMARKER_STUDY_RDF_URL = u'https://edrn.jpl.nasa.gov/bmdb/rdf/biomarkerorgans'
+BIOMARKER_RDF_URL = 'https://bmdb.jpl.nasa.gov/rdf/biomarkers'
+BIOMARKER_STUDY_RDF_URL = 'https://bmdb.jpl.nasa.gov/rdf/biomarker-organs'
 
 # How about science data?
-ECAS_RDF_URL = u'http://edrn.jpl.nasa.gov/fmprodp3/rdf/dataset?type=ALL&baseUrl=http://edrn.jpl.nasa.gov/ecas/data/dataset'
+ECAS_RDF_URL = 'https://edrn.jpl.nasa.gov/cancerdataexpo/rdf-data/labcas/@@rdf'
 
 # Some common URIs for biomarker-related objects
-BIOMARKER_URI = rdflib.term.URIRef(u'http://edrn.nci.nih.gov/rdf/rdfs/bmdb-1.0.0#Biomarker')
-BIOMARKER_STUDY_DATA_URI = rdflib.term.URIRef(u'http://edrn.nci.nih.gov/rdf/rdfs/bmdb-1.0.0#BiomarkerStudyData')
-DC_TITLE_URI = rdflib.term.URIRef(u'http://purl.org/dc/terms/title')
+BIOMARKER_URI = rdflib.term.URIRef('http://edrn.nci.nih.gov/rdf/rdfs/bmdb-1.0.0#Biomarker')
+BIOMARKER_STUDY_DATA_URI = rdflib.term.URIRef('http://edrn.nci.nih.gov/rdf/rdfs/bmdb-1.0.0#BiomarkerStudyData')
+DC_TITLE_URI = rdflib.term.URIRef('http://purl.org/dc/terms/title')
 
-_biomarkerStudyDataURI = rdflib.term.URIRef(u'http://edrn.nci.nih.gov/rdf/rdfs/bmdb-1.0.0#BiomarkerStudyData')
-_biomarkerOrganData = rdflib.term.URIRef(u'http://edrn.nci.nih.gov/rdf/rdfs/bmdb-1.0.0#BiomarkerOrganData')
-_biomarkerOrganStudyData = rdflib.term.URIRef(u'http://edrn.nci.nih.gov/rdf/rdfs/bmdb-1.0.0#BiomarkerOrganStudyData')
-_sensitivityData = rdflib.term.URIRef(u'http://edrn.nci.nih.gov/rdf/rdfs/bmdb-1.0.0#SensitivityData')
+_biomarkerStudyDataURI = rdflib.term.URIRef('http://edrn.nci.nih.gov/rdf/rdfs/bmdb-1.0.0#BiomarkerStudyData')
+_biomarkerOrganData = rdflib.term.URIRef('http://edrn.nci.nih.gov/rdf/rdfs/bmdb-1.0.0#BiomarkerOrganData')
+_biomarkerOrganStudyData = rdflib.term.URIRef('http://edrn.nci.nih.gov/rdf/rdfs/bmdb-1.0.0#BiomarkerOrganStudyData')
+_sensitivityData = rdflib.term.URIRef('http://edrn.nci.nih.gov/rdf/rdfs/bmdb-1.0.0#SensitivityData')
 
 # Set up logging
-logging.basicConfig(level=logging.DEBUG, format=u'%(asctime)s %(levelname)-8s %(message)s')
-
-
-class UnicodeCSVWriter(object):
-    u'''See https://docs.python.org/2.7/library/csv.html?highlight=csv#examples'''
-    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
-        # Redirect output to a queue
-        self.queue = cStringIO.StringIO()
-        self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
-        self.stream = f
-        self.encoder = codecs.getincrementalencoder(encoding)()
-    def writerow(self, row):
-        self.writer.writerow([s.encode("utf-8") for s in row])
-        # Fetch UTF-8 output from the queue ...
-        data = self.queue.getvalue()
-        data = data.decode("utf-8")
-        # ... and reencode it into the target encoding
-        data = self.encoder.encode(data)
-        # write to the target stream
-        self.stream.write(data)
-        # empty queue
-        self.queue.truncate(0)
-    def writerows(self, rows):
-        for row in rows:
-            self.writerow(row)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 
 
 def _parseRDF(graph):
-    u'''Convert an RDF graph into a mapping of {s→{p→[o]}} where s is a subject
+    '''Convert an RDF graph into a mapping of {s→{p→[o]}} where s is a subject
     URI, p is a predicate URI, and o is a list of objects which may be literals
     or URI references.
     '''
@@ -68,7 +44,7 @@ def _parseRDF(graph):
 
 
 def getStatements(url):
-    u'''Return a mapping of statements to predicates to objects for the RDF at url.'''
+    '''Return a mapping of statements to predicates to objects for the RDF at url.'''
     g = rdflib.Graph()
     g.load(url)
     return _parseRDF(g)

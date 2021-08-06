@@ -47,6 +47,7 @@ _classifiers = [
 def _read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
+
 _header = '*' * len(_name) + '\n' + _name + '\n' + '*' * len(_name)
 _longDescription = _header + '\n\n' + _read('README.rst') + '\n\n' + _read('docs', 'INSTALL.rst') + '\n\n' \
     + _read('docs', 'HISTORY.rst')
@@ -69,7 +70,7 @@ setup(
     name=_name,
     namespace_packages=_namespaces,
     package_dir={'': 'src'},
-    packages=find_packages('src', exclude=['ez_setup', 'bootstrap']),
+    packages=find_packages('src'),
     test_suite=_testSuite,
     url='https://github.com/EDRN/' + _name,
     version=_version,
